@@ -12,7 +12,7 @@ MYSQL_ROOT_PASS=rootpass
 build:
 	docker build ${NOCACHE} -t ${OMEKA_TAG} .
 
-run: build
+run:
 	docker run -d --name ${MYSQL_NAME} -e MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASS} -d mysql
 	docker run -d -p 80:80 --link ${MYSQL_NAME}:mysql --name ${OMEKA_NAME} ${OMEKA_TAG}
 	make copysql
@@ -22,6 +22,10 @@ mysql:
 
 createdb:
 	mysql -h`docker inspect ${MYSQL_NAME} | grep IPAddress | sed -e 's/.*: "\(.*\)",/\1/'` -uroot -p${MYSQL_ROOT_PASS} < files/create.sql
+
+pull:
+	docker pull ${MYSQL_TAG}
+	docker pull ${OMEKA_TAG}
 
 stop:
 	docker stop ${OMEKA_NAME}
@@ -45,8 +49,15 @@ details:
 
 rebuild:
 	make distclean
+	make build
 	make start
 	sleep 5
 	make createdb
 
-.PHONY: build run copysql mysql createdb stop start clean distclean status details rebuild
+go:
+	make pull
+	make start
+	sleep 5
+	make createdb
+
+.PHONY: build run copysql mysql createdb stop start clean distclean status details rebuild pull go
