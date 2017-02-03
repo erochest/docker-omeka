@@ -1,8 +1,11 @@
 
+SHELL=/bin/bash
+
 NOCACHE=
 
 OMEKA_TAG=erochest/omeka
 OMEKA_NAME=omeka
+DOCKER_TAG=2.5
 
 MYSQL_TAG=mysql
 MYSQL_NAME=mysql
@@ -25,6 +28,10 @@ createdb:
 pull:
 	docker pull ${MYSQL_TAG}
 	docker pull ${OMEKA_TAG}
+
+push: build
+	docker tag `docker images --format {{.ID}} ${OMEKA_TAG}:latest` ${OMEKA_TAG}:${DOCKER_TAG}
+	docker push ${OMEKA_TAG}
 
 stop:
 	docker stop ${OMEKA_NAME}
