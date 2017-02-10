@@ -1,6 +1,7 @@
 
 SHELL=/bin/bash
 
+# NOCACHE=--no-cache
 NOCACHE=
 
 OMEKA_TAG=erochest/omeka
@@ -16,8 +17,7 @@ build:
 	docker build ${NOCACHE} -t ${OMEKA_TAG} .
 
 run:
-	docker run -d --name ${MYSQL_NAME} -e MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASS} -d mysql
-	docker run -d -p 80:80 --link ${MYSQL_NAME}:mysql --name ${OMEKA_NAME} ${OMEKA_TAG}
+	docker-compose up
 
 mysql:
 	docker run -it --link ${MYSQL_NAME}:mysql --rm mysql sh -c 'exec mysql -h"$$MYSQL_PORT_3306_TCP_ADDR" -P"$$MYSQL_PORT_3306_TCP_PORT" -uroot -p"$$MYSQL_ENV_MYSQL_ROOT_PASSWORD"'
@@ -34,11 +34,9 @@ push: build
 	docker push ${OMEKA_TAG}
 
 stop:
-	docker stop ${OMEKA_NAME}
-	docker stop ${MYSQL_NAME}
+	docker-compose stop
 
 start: run
-	docker start ${OMEKA_NAME}
 
 clean: stop
 	docker rm ${OMEKA_NAME}

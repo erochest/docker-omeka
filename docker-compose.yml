@@ -1,17 +1,22 @@
-mysql:
-  image: mysql
-  environment:
-    MYSQL_ROOT_PASSWORD: omeka
-    MYSQL_DATABASE: omeka
-    MYSQL_USER: omeka
-    MYSQL_PASSWORD: omeka
-omeka:
-  image: erochest/omeka
-  ports:
-    - "8880:80"
-  links:
-    - mysql
-  environment:
-    MYSQL_DBNAME: omeka
-    MYSQL_USER: omeka
-    MYSQL_PASSWORD: omeka
+version: "3"
+
+services:
+  mysql:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: omeka
+      MYSQL_DATABASE: omeka
+      MYSQL_USER: omeka
+      MYSQL_PASSWORD: omeka
+  omeka:
+    image: erochest/omeka
+    ports:
+      - "8888:80"
+    links:
+      - mysql
+    environment:
+      MYSQL_DBNAME: omeka
+      MYSQL_USER: omeka
+      MYSQL_PASSWORD: omeka
+    depends_on:
+      - mysql
